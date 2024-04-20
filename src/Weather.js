@@ -1,26 +1,62 @@
 import React from "react";
 import axios from "axios";
-import { ColorRing } from "react-loader-spinner";
 
-export default function Weather(props) {
-  function handleResponse(response) {
-    alert(`The weather in ${response.data.name} is ${response.data.main.temp}`);
+export default function Weather() {
+  const [city, setCity] = "";
+  const [loaded, setLoaded] = "";
+  const [temperature, setTemperature] = "";
+
+  function showWeather(response) {
+    setLoaded(true);
+    setTemperature({
+      temperature: response.data.main.temp,
+      wind: response.data.wind.speed,
+      humidity: response.data.main.humidity,
+      icon: `http://openweathermap.org/img/wn/${response.data.weather[0].icon}@2x.png`,
+      description: response.data.weather[0].description,
+    });
   }
 
-  let appID = "25fad9f7e87157d33dde0f82ab269ee8";
-  let url = `https://api.openweathermap.org/data/2.5/weather?q=${props.city}&appid=${appID}&units=metric`;
+  function handleSubmit(event) {
+    event.preventDefault();
+    let appID = "25fad9f7e87157d33dde0f82ab269ee8";
+    let url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${appID}&units=metric`;
+    axios.get(url).then(showWeather);
+  }
 
-  axios.get(url).then(handleResponse);
+  function updateCity(event) {
+    setCity(event.target.value);
+  }
 
-  return (
-    <ColorRing
-      height="80"
-      width="80"
-      ariaLabel="color-ring-loading"
-      wrapperStyle={{}}
-      wrapperClass="color-ring-wrapper"
-      colors={["#e15b64", "#f47e60", "#f8b26a", "#abbd81", "#849b87"]}
-      timeout={3000}
-    />
+  let form = (
+    <form onSubmit={handleSubmit}>
+      <input
+        className="inputSearch"
+        type="search"
+        placeholder="Enter a city"
+        onChange={updateCity}
+      />
+      <input className="buttonSearch" type="submit" value="Search" />
+    </form>
   );
+
+  if (loaded) {
+    return (
+      <div>
+        {form}
+        <ul>
+          <li className="city">{city}</li>
+          <li>Temperature: {Math.round(temperature.temperature)}°C</li>
+          <li>Description: {temperature.description}</li>
+          <li>Humidity: {temperature.humidity}%</li>
+          <li>Wind: {temperature.wind}km/h</li>
+          <li>
+            <img src={temperature.icon} alt={temperature.description} />
+          </li>
+        </ul>
+      </div>
+    );
+  } else {
+    return form;
+  }
 }
