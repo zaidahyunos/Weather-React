@@ -23,7 +23,10 @@ function App() {
             Github
           </a>{" "}
           and hosted on{" "}
-          <a href="" className="link">
+          <a
+            href="https://delicate-clafoutis-67edbe.netlify.app/"
+            className="link"
+          >
             Netlify
           </a>
         </p>
